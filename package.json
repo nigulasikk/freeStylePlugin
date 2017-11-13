@@ -1,0 +1,17 @@
+{
+  "name": "free-style-plugin",
+  "version": "0.0.1",
+  "description": "中文韵脚搜词插件",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "freeStyle"
+  ],
+  "author": "kaikai",
+  "license": "ISC",
+  "dependencies": {
+    "pinyin": "^2.8.3"
+  }
+}
