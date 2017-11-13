@@ -129,9 +129,11 @@ function getLastEnPronunciation(wordEn) {
  * @param  {[type]} word [description]
  * @return {[type]}      [description]
  */
-function getWords(word) {
+function getWords(word ,searchCondition='full') {
+  console.log(searchCondition)
     var result = []
-    var distYunmu = getYunMu(word)
+    var wordBySearchCondition = searchCondition === 'full' ? word : word[word.length -1]
+    var distYunmu = getYunMu(wordBySearchCondition)
     console.log('目标韵母：' + distYunmu)
     dict.forEach(item => {
         /**
@@ -155,14 +157,14 @@ exports.getWords = function (word,searchCondition) {
   var promise = new Promise( (resolve, reject) => {
     if (dict.length) {
       console.log('从缓存里读取')
-      resolve(getWords(word))
+      resolve(getWords(word, searchCondition))
     } else {
       initDictYunMu()
       .then( () => {
         return initDictEn()
       })
       .then( () => {
-        resolve(getWords(word))
+        resolve(getWords(word, searchCondition))
       })
     }
   })
