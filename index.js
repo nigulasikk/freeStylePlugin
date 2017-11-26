@@ -40,7 +40,7 @@ function initDictYunMu() {
              */
             arr = arr.sort((a, b) => (a.weight - b.weight)).sort((a, b) => (a.name.length - b.name.length)).filter(value => { return value.name.length > 1 })
             var end = new Date().getTime();
-            console.log(`处理词库220626多词共花费${(end-start)/1000}秒`);
+            // console.log(`处理词库220626多词共花费${(end-start)/1000}秒`);
             // console.log(arr);  
             dict = arr;
             resolve()
@@ -76,7 +76,7 @@ function initDictEn() {
             })
 
             var end = new Date().getTime();
-            console.log(`处理英文花费${(end-start)/1000}秒`);
+            // console.log(`处理英文花费${(end-start)/1000}秒`);
             resolve()
             // console.log(arrEn);  
             // console.log(lastProMap);
@@ -130,11 +130,11 @@ function getLastEnPronunciation(wordEn) {
  * @return {[type]}      [description]
  */
 function getWords(word ,searchCondition='full') {
-  console.log(searchCondition)
+    word = decodeURIComponent(word)
     var result = []
     var wordBySearchCondition = searchCondition === 'full' ? word : word[word.length -1]
     var distYunmu = getYunMu(wordBySearchCondition)
-    console.log('目标韵母：' + distYunmu)
+    // console.log('目标韵母：' + distYunmu)
     dict.forEach(item => {
         /**
          * [if 如果韵脚匹配 && 文字末端韵母匹配]
@@ -156,7 +156,7 @@ function getWords(word ,searchCondition='full') {
 exports.getWords = function (word,searchCondition) {
   var promise = new Promise( (resolve, reject) => {
     if (dict.length) {
-      console.log('从缓存里读取')
+      // console.log('从缓存里读取')
       resolve(getWords(word, searchCondition))
     } else {
       initDictYunMu()
