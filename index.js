@@ -1,10 +1,11 @@
 var fs = require('fs');
 var pinyin = require("pinyin");
 /**
- * 数据清理后的中文词库，用于缓存
+ * 数据清理后的词库，用于缓存
  * @type {Array}
  */
 var dict = []
+var dictEn = []
 
 /**
  * 初始化中文词库
@@ -68,18 +69,15 @@ function initDictEn() {
             /**
              * 统计下最后字母发音
              */
-            let lastProMap = new Map();
             arrRawEn.forEach(item => {
                 var itemSplitEn = item.split('  ')
-                arrEn.push({ name: itemSplitEn[0], yunMu: getLastEnPronunciation(itemSplitEn[1]) })
-                lastProMap.set(getLastEnPronunciation(itemSplitEn[1]), 'xixi')
+                arrEn.push({ name: itemSplitEn[0], yunMu: itemSplitEn[1] })
             })
 
             var end = new Date().getTime();
-            // console.log(`处理英文花费${(end-start)/1000}秒`);
+            // console.logs(`处理英文花费${(end-start)/1000}秒`);
+            dictEn =  arrEn
             resolve()
-            // console.log(arrEn);  
-            // console.log(lastProMap);
         }
     });
   })
@@ -117,12 +115,16 @@ function getYunMu(word) {
     // ,ui,ao  和 ,i,ao 就不会匹配在一起啦...
     return ',' + yunMu
 }
-/**
- * 得到英文 最后音节发音
- */
-function getLastEnPronunciation(wordEn) {
-    let wordsArray = wordEn.split(' ')
-    return wordsArray[wordsArray.length - 1]
+function getShenMu(word) {
+    /**
+     * 声母数组
+     */
+    var shenMu = pinyin(word, {
+        style: pinyin.STYLE_INITIALS, // 设置拼音风格
+        segment: true,
+        heteronym: true
+    })
+    return shenMu
 }
 /**
  * 解析 单词韵母  返回相似韵脚的单词
@@ -131,20 +133,53 @@ function getLastEnPronunciation(wordEn) {
  */
 function getWords(word ,searchCondition='full') {
     word = decodeURIComponent(word)
-    var result = []
-    var wordBySearchCondition = searchCondition === 'full' ? word : word[word.length -1]
-    var distYunmu = getYunMu(wordBySearchCondition)
-    // console.log('目标韵母：' + distYunmu)
-    dict.forEach(item => {
-        /**
-         * [if 如果韵脚匹配 && 文字末端韵母匹配]
-         */
-        let yunMuPosition = item.yunMu.indexOf(distYunmu)
-        if (yunMuPosition > -1 && (yunMuPosition + distYunmu.length) === item.yunMu.length) {
-            result.push(item.name)
-        }
-    })
-    return result.splice(0, 1000)
+    /**
+     *  当搜索条件是英文时候
+     *  searchCondition 为en时候，去英文词库搜索
+     */
+    if ( searchCondition === 'en') {
+      let resultEn = []
+      let shengmuRaw= getShenMu(word)
+      /**
+       * 生成中文声母正则表达式
+       * 用于匹配英文
+       */
+      var regMatch = shengmuRaw.map((shenMuItem, index) => {
+        return shenMuItem[0].toUpperCase()
+      }).join('.*')
+      let reg = new RegExp(regMatch , 'g')
+      dictEn.forEach(item => {
+          /**
+           * [if 中文声母 和 英文 发音相匹配]
+           */
+          if (reg.test(item.yunMu)) {
+            resultEn.push(item.name.toLowerCase())
+          }
+      })
+      /**
+       * 取前1000个结果，并且乱序
+       */
+      return resultEn.splice(0, 1000).sort(() => { return 0.5 - Math.random() })
+    } else {
+      /**
+       *  当搜索条件是中文时候
+       *  searchCondition 为full 或 single时候，去中文词库搜索
+       */
+      var result = []
+      var wordBySearchCondition = searchCondition === 'full' ? word : word[word.length -1]
+      var distYunmu = getYunMu(wordBySearchCondition)
+      // console.log('目标韵母：' + distYunmu)
+      dict.forEach(item => {
+          /**
+           * [if 如果韵脚匹配 && 文字末端韵母匹配]
+           */
+          let yunMuPosition = item.yunMu.indexOf(distYunmu)
+          if (yunMuPosition > -1 && (yunMuPosition + distYunmu.length) === item.yunMu.length) {
+              result.push(item.name)
+          }
+      })
+      return result.splice(0, 1000)
+    }
 }
 /**
  * 如果词库已初始化，则从缓存中取，返回匹配数据

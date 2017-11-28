@@ -15,10 +15,10 @@
   })  
   ```
 
-#### 参数
+#### 参数 (其中keyWordParam,searchTypeParam请参照下面表格)
   ```js
   var freeStyle = require('free-style-plugin')
-  freeStyle.getWords(keyWord,searchType).then( function (res) {
+  freeStyle.getWords(keyWordParam,searchTypeParam).then( function (res) {
       console.log(res)
   })  
   ```
