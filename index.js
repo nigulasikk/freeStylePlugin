@@ -131,7 +131,7 @@ function getShenMu(word) {
  * @param  {[type]} word [description]
  * @return {[type]}      [description]
  */
-function getWords(word ,searchCondition='full') {
+function searchWords(word ,searchCondition='full') {
     word = decodeURIComponent(word)
     /**
      *  当搜索条件是英文时候
@@ -192,14 +192,14 @@ exports.getWords = function (word,searchCondition) {
   var promise = new Promise( (resolve, reject) => {
     if (dict.length) {
       // console.log('从缓存里读取')
-      resolve(getWords(word, searchCondition))
+      resolve(searchWords(word, searchCondition))
     } else {
       initDictYunMu()
       .then( () => {
         return initDictEn()
       })
       .then( () => {
-        resolve(getWords(word, searchCondition))
+        resolve(searchWords(word, searchCondition))
       })
     }
   })
