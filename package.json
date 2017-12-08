@@ -1,6 +1,6 @@
 {
   "name": "free-style-plugin",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "中文韵脚搜词插件",
   "repository": "git@github.com:nigulasikk/freeStylePlugin.git",
   "main": "index.js",
