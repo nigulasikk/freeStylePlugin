@@ -92,7 +92,7 @@ function getYunMu(word) {
      * 声母数组
      */
     var shenMu = pinyin(word, {
-        style: pinyin.STYLE_INITIALS, // 设置拼音风格
+        style: pinyin.STYLE_FIRST_LETTER, // 设置拼音风格
         segment: true,
         heteronym: true
     })
